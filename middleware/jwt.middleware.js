@@ -20,7 +20,8 @@ function getTokenFromHeaders(req) {
 // Instantiate the JWT token validation middleware
 const isAuthenticated = jwt({
   // 'secret': The secret key used to sign and verify the JWT. It should match the secret used to generate the tokens.
-  secret: process.env.TOKEN_SECRET,
+  // secret: process.env.TOKEN_SECRET,
+  secret: "AlexAlex",
 
   // 'algorithms': The list of allowed algorithms for token validation. In this case, only the "HS256" algorithm is allowed.
   algorithms: ["HS256"],
