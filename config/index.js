@@ -17,9 +17,14 @@ module.exports = (app) => {
   // Services like heroku use something called a proxy and you need to add this to your server
   app.set("trust proxy", 1);
 
+  // app.use(
+  //   cors({
+  //     origin: ["http://localhost:5173"],
+  //   })
+  // );
   app.use(
     cors({
-      origin: ["http://localhost:5173"],
+      origin: ["https://profound-wisp-b0a565.netlify.app"],
     })
   );
 
