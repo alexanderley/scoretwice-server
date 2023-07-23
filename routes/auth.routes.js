@@ -104,9 +104,14 @@ router.post("/login", (req, res, next) => {
           algorithm: "HS256",
           expiresIn: "6h",
         });
+        const responseObj = {
+          authToken: authToken,
+          foundUser: foundUser, // Include the user data in the response
+        };
 
         // Send the token as the response
-        res.status(200).json({ authToken: authToken });
+        // res.status(200).json({ authToken: authToken });
+        res.status(200).json(responseObj);
       } else {
         res.status(401).json({ message: "Unable to authenticate the user" });
       }
