@@ -13,6 +13,7 @@ mongoose
   .connect(VITE_MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
     writeConcern: {
       w: "majority",
       j: true,

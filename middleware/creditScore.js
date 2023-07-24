@@ -114,7 +114,8 @@ const getCreditScore = AsyncHandler(async (req, res, next) => {
 
     // Calculate Score using calculate function, based on data
     creditScore.creditScoreGrade = calculateCreditScore(creditScore);
+    next();
   }
 });
 
-modules.export = { calculateCreditScore, getCreditScore };
+module.exports = { getCreditScore };

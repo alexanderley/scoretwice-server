@@ -20,6 +20,9 @@ app.use("/api", isAuthenticated, taskRouter);
 const userRouter = require("./routes/user.routes");
 app.use("/api", isAuthenticated, userRouter);
 
+const creditScoreRouter = require("./routes/creditScore.routes");
+app.use("/api", isAuthenticated, creditScoreRouter);
+
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter); //  <== ADD
 
