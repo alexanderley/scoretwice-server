@@ -93,4 +93,45 @@ router.put("/users/:id", (req, res, next) => {
     );
 });
 
+
+
+
+
+// POST request to increase the account balance for a user
+router.post("/users/:id/account", (req, res) => {
+  const userId = req.params.id;
+  const amountToIncrease = req.body.amount; // The amount to increase the account balance by
+
+  // Find the user and populate the account field
+  User.findById(userId)
+    .populate("account")
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      if (!user.account) {
+        return res.status(404).json({ error: "User does not have an account." });
+      }
+
+      // Increase the account balance
+      user.account.balance += amountToIncrease;
+      return user.account.save();
+    })
+    .then((updatedAccount) => {
+      return res.json({ message: "Account balance increased successfully.", newBalance: updatedAccount.balance });
+    })
+    .catch((err) => {
+      console.error("Error while increasing account balance:", err);
+      return res.status(500).json({ error: "Internal server error." });
+    });
+});
+
+
+
+
+
+
+
+
 module.exports = router;
