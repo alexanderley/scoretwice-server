@@ -36,7 +36,7 @@ router.get("/users/:id", (req, res, next) => {
 
 router.put("/users/:id", (req, res, next) => {
   const { id } = req.params;
-
+  console.log("payload", req.payload);
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(400).json({ message: "Specified id is not valid" });
     return;
@@ -88,7 +88,9 @@ router.put("/users/:id", (req, res, next) => {
         res.status(200).json(updatedUser);
       }
     })
-    .catch((error) => res.status(500).json({ message: "Error updating user", error }));
+    .catch((error) =>
+      res.status(500).json({ message: "Error updating user", error })
+    );
 });
 
 module.exports = router;

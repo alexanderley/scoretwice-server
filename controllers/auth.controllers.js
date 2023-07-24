@@ -107,10 +107,18 @@ const loginUser = async (req, res, next) => {
 
       if (passwordCorrect) {
         // Deconstruct the user object to omit the password
-        const { _id, email, firstName, lastName } = foundUser;
+        const { _id, email, firstName, lastName, gender, birthday, account } = foundUser;
 
         // Create an object that will be set as the token payload
-        const payload = { _id, email, firstName, lastName };
+        const payload = {
+          _id,
+          email,
+          firstName,
+          lastName,
+          gender,
+          birthday,
+          account
+        };
 
         // Create and sign the token
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
@@ -124,7 +132,7 @@ const loginUser = async (req, res, next) => {
           foundUser: foundUser,
         };
 
-        // Send the token and user data as the response
+        // Send the token a nd user data as the response
         res.status(200).json(responseObj);
       } else {
         res.status(401).json({ message: "Unable to authenticate the user" });
@@ -132,10 +140,5 @@ const loginUser = async (req, res, next) => {
     })
     .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
 };
-
-
-
-
-
 
 module.exports = { registerUser, loginUser };
