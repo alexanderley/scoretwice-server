@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 // Function to generate random IBAN for a specific country code (e.g., DE for Germany)
 function generateRandomIBAN(countryCode) {
-  const randomNumbers = Math.floor(Math.random() * 999999999)
+  const randomNumbers = Math.floor(Math.random() * 99999999999)
     .toString()
-    .padStart(9, "0");
+    .padStart(11, "0");
   const iban = `${countryCode}${randomNumbers}`;
   return iban;
 }
