@@ -8,6 +8,8 @@ const app = express();
 app.use(express.json());
 const router = express.Router();
 
+//POST TRANSACTION FROM USER1 TO USER2
+
 router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
   const senderId = req.params.senderId;
   const receiverId = req.params.receiverId;
@@ -46,6 +48,10 @@ router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
       sender.account.balance -= amount;
       receiver.account.balance += amount;
 
+      // Update account transactions for sender and receiver
+      sender.account.transactions.push(transaction._id);
+      receiver.account.transactions.push(transaction._id);
+
       return Promise.all([
         transaction.save(),
         sender.account.save(),
@@ -62,6 +68,27 @@ router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
     })
     .catch((err) => {
       console.error("Error while processing transaction:", err);
+      return res.status(500).json({ error: "Internal server error." });
+    });
+});
+
+// GET all transactions for a specific user
+router.get("/users/:userId/transactions", (req, res) => {
+  const userId = req.params.userId;
+
+  // Find all transactions for the specified user
+  Transaction.find({ $or: [{ sender: userId }, { receiver: userId }] })
+    .then((transactions) => {
+      if (!transactions || transactions.length === 0) {
+        return res
+          .status(404)
+          .json({ error: "No transactions found for the user." });
+      }
+
+      return res.json({ transactions: transactions });
+    })
+    .catch((err) => {
+      console.error("Error while fetching transactions:", err);
       return res.status(500).json({ error: "Internal server error." });
     });
 });
