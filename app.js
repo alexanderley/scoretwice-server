@@ -19,15 +19,13 @@ app.use("/api", isAuthenticated, taskRouter);
 
 //TRANSACTIONS
 const transactionRouter = require("./routes/transactions.routes");
-app.use("/api", transactionRouter);
+app.use("/api", isAuthenticated, transactionRouter);
 //USER
 const userRouter = require("./routes/user.routes");
 app.use("/api", isAuthenticated, userRouter);
 //AUTHENTIFICATION
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
-
-
 
 require("./error-handling")(app);
 
