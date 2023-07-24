@@ -2,26 +2,31 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User.model");
+const Account = require("../models/Account.model");
 
 const router = express.Router();
 const saltRounds = 10;
 
 const { isAuthenticated } = require("./../middleware/jwt.middleware.js"); // <== IMPORT
 
-// POST  /auth/signup
-// ...
-router.post("/signup", (req, res, next) => {
-  const { email, password, name } = req.body;
+// POST       Registration
+// ROUTE      "/signup"
+// ACCESS     public
 
-  // Check if the email or password or name is provided as an empty string
-  if (email === "" || password === "" || name === "") {
-    res.status(400).json({ message: "Provide email, password and name" });
+router.post("/signup", async (req, res, next) => {
+  const { mail, password, firstName, lastName } = req.body;
+
+  // Check if the mail, password, firstName, or lastName is provided as an empty string
+  if (mail === "" || password === "" || firstName === "" || lastName === "") {
+    res
+      .status(400)
+      .json({ message: "Provide mail, password, firstName, and lastName" });
     return;
   }
 
-  // Use regex to validate the email format
+  // Use regex to validate the mail format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  if (!emailRegex.test(email)) {
+  if (!emailRegex.test(mail)) {
     res.status(400).json({ message: "Provide a valid email address." });
     return;
   }
@@ -36,41 +41,50 @@ router.post("/signup", (req, res, next) => {
     return;
   }
 
-  // Check the users collection if a user with the same email already exists
-  User.findOne({ email })
-    .then((foundUser) => {
-      // If the user with the same email already exists, send an error response
-      if (foundUser) {
-        res.status(400).json({ message: "User already exists." });
-        return;
-      }
+  try {
+    // Check if the user with the same email already exists
+    const foundUser = await User.findOne({ mail });
+    if (foundUser) {
+      res.status(400).json({ message: "User already exists." });
+      return;
+    }
 
-      // If the email is unique, proceed to hash the password
-      const salt = bcrypt.genSaltSync(saltRounds);
-      const hashedPassword = bcrypt.hashSync(password, salt);
+    // If the email is unique, proceed to hash the password
+    const salt = bcrypt.genSaltSync(saltRounds);
+    const hashedPassword = bcrypt.hashSync(password, salt);
 
-      // Create a new user in the database
-      // We return a pending promise, which allows us to chain another `then`
-      return User.create({ email, password: hashedPassword, name });
-    })
-    .then((createdUser) => {
-      // Deconstruct the newly created user object to omit the password
-      // We should never expose passwords publicly
-      const { email, name, _id } = createdUser;
-
-      // Create a new object that doesn't expose the password
-      const user = { email, name, _id };
-
-      // Send a json response containing the user object
-      res.status(201).json({ user: user });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ message: "Internal Server Error" });
+    // Create a new user in the database
+    const newUser = await User.create({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
     });
+
+    // Create an associated account for the user
+    const newAccount = await Account.create({ owner: newUser._id });
+
+    // Update the user's account field with the newly created account's ID
+    newUser.account = newAccount._id;
+    await newUser.save();
+
+    // Deconstruct the newly created user object to omit the password
+    const { email, firstName, lastName, _id } = newUser;
+
+    // Create a new object that doesn't expose the password
+    const user = { email, firstName, lastName, _id };
+
+    // Send a json response containing the user object
+    res.status(201).json({ user: user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
-// POST  /auth/login - Verifies email and password and returns a JWT
+// POST       Login
+// ROUTE      "/login"
+// ACCESS     public
 router.post("/login", (req, res, next) => {
   const { email, password } = req.body;
 
@@ -120,7 +134,7 @@ router.post("/login", (req, res, next) => {
 });
 
 // GET  /auth/verify
-// ...
+
 router.get("/verify", isAuthenticated, (req, res, next) => {
   // If JWT token is valid the payload gets decoded by the
   // isAuthenticated middleware and made available on `req.payload`
