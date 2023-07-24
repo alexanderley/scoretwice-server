@@ -10,7 +10,15 @@ const VITE_MONGO_URI =
   "mongodb://127.0.0.1:27017/project-management-server";
 
 mongoose
-  .connect(VITE_MONGO_URI)
+  .connect(VITE_MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    writeConcern: {
+      w: "majority",
+      j: true,
+      wtimeout: 1000,
+    },
+  })
   .then((x) => {
     console.log(
       `Connected to Mongo! Database name: "${x.connections[0].name}"`
