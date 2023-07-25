@@ -54,49 +54,31 @@ router.get("/users/:id", (req, res, next) => {
 router.put("/users/:id", (req, res, next) => {
   const { id } = req.params;
   console.log("payload", req.payload);
+  // res.send("Connected to the route in the backend");
+
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(400).json({ message: "Specified id is not valid" });
     return;
   }
 
-  // Create an empty object to store the selective updates
-  const updateFields = {};
+  const { email, password /* and other fields */ } = req.body;
+  console.log("reqBody: ", req.body);
 
-  // Fields that can be updated selectively
-  const allowedFields = [
-    "username",
-    "email",
-    "password",
-    "additionalField1",
-    "additionalField2",
-    "firstName",
-    "lastName",
-    "gender",
-    "birthday",
-  ];
+  const updates = {};
 
-  // Iterate through the allowedFields and check if they exist in the request body
-  allowedFields.forEach((field) => {
-    if (req.body.hasOwnProperty(field)) {
-      // If the field exists in the request body, add it to the updateFields object
-      if (field === "password") {
-        // If updating the password, hash it before saving it to the database
-        updateFields[field] = bcrypt.hashSync(req.body[field], 10);
-      } else {
-        updateFields[field] = req.body[field];
-      }
-    }
-  });
+  if (email) updates.email = email;
+  if (password) updates.password = bcrypt.hashSync(password, 10);
+  console.log("updates:", updates);
 
-  if (Object.keys(updateFields).length === 0) {
+  if (Object.keys(updates).length === 0) {
     res.status(400).json({ message: "No valid fields to update" });
     return;
   }
 
   User.findByIdAndUpdate(
     id,
-    updateFields,
-    { new: true } // This option returns the updated user data.
+    updates,
+    { new: true } // Return the updated user in the response
   )
     .then((updatedUser) => {
       if (!updatedUser) {
@@ -109,11 +91,6 @@ router.put("/users/:id", (req, res, next) => {
       res.status(500).json({ message: "Error updating user", error })
     );
 });
-
-
-
-
-
 
 // POST request to increase the account balance for a user
 router.post("/users/:id/account", (req, res) => {
@@ -129,7 +106,9 @@ router.post("/users/:id/account", (req, res) => {
       }
 
       if (!user.account) {
-        return res.status(404).json({ error: "User does not have an account." });
+        return res
+          .status(404)
+          .json({ error: "User does not have an account." });
       }
 
       // Increase the account balance
@@ -137,15 +116,16 @@ router.post("/users/:id/account", (req, res) => {
       return user.account.save();
     })
     .then((updatedAccount) => {
-      return res.json({ message: "Account balance increased successfully.", newBalance: updatedAccount.balance });
+      return res.json({
+        message: "Account balance increased successfully.",
+        newBalance: updatedAccount.balance,
+      });
     })
     .catch((err) => {
       console.error("Error while increasing account balance:", err);
       return res.status(500).json({ error: "Internal server error." });
     });
 });
-
-
 
 // POST HARDRESET
 router.post("/users/:id/resetaccountbalance", (req, res) => {
@@ -161,7 +141,9 @@ router.post("/users/:id/resetaccountbalance", (req, res) => {
       }
 
       if (!user.account) {
-        return res.status(404).json({ error: "User does not have an account." });
+        return res
+          .status(404)
+          .json({ error: "User does not have an account." });
       }
 
       // Increase the account balance
@@ -169,18 +151,15 @@ router.post("/users/:id/resetaccountbalance", (req, res) => {
       return user.account.save();
     })
     .then((updatedAccount) => {
-      return res.json({ message: "Account balance increased successfully.", newBalance: updatedAccount.balance });
+      return res.json({
+        message: "Account balance increased successfully.",
+        newBalance: updatedAccount.balance,
+      });
     })
     .catch((err) => {
       console.error("Error while increasing account balance:", err);
       return res.status(500).json({ error: "Internal server error." });
     });
 });
-
-
-
-
-
-
 
 module.exports = router;
