@@ -14,6 +14,7 @@ router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
   const senderId = req.params.senderId;
   const receiverId = req.params.receiverId;
   const amount = req.body.amount;
+  const transferMessage = req.body.transferMessage;
 
   // Find the sender and receiver users and their accounts
   Promise.all([
@@ -42,6 +43,7 @@ router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
         sender: senderId,
         receiver: receiverId,
         amount: amount,
+        transferMessage: transferMessage,
       });
 
       // Update account balances
@@ -62,6 +64,7 @@ router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
       return res.json({
         message: "Transaction successful.",
         transaction: transaction,
+        transferMessage: transferMessage,
         senderNewBalance: senderAccount.balance,
         receiverNewBalance: receiverAccount.balance,
       });
