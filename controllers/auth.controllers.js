@@ -47,7 +47,7 @@ const registerUser = async (req, res) => {
     // If the email is unique, proceed to hash the password
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashedPassword = bcrypt.hashSync(password, salt);
-    console.log("cona", hashedPassword);
+    console.log("hashedPassword", hashedPassword);
 
     const createdUser = await User.create({
       email,
@@ -55,7 +55,7 @@ const registerUser = async (req, res) => {
       firstName,
       lastName,
       gender,
-      birthday,
+      birthday
     });
 
     console.log(createdUser);

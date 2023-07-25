@@ -8,6 +8,7 @@ const transactionSchema = new mongoose.Schema({
     required: true,
   },
   amount: { type: Number, required: true },
+  transferMessage: { type: String },
   date: { type: Date, default: Date.now },
 });
 
