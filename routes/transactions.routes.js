@@ -8,12 +8,11 @@ const app = express();
 app.use(express.json());
 const router = express.Router();
 
-//POST TRANSACTION FROM USER1 TO USER2
-
+// POST TRANSACTION FROM USER1 TO USER2
 router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
   const senderId = req.params.senderId;
   const receiverId = req.params.receiverId;
-  const amount = req.body.amount;
+  const amount = Number(req.body.amount);
   const transferMessage = req.body.transferMessage;
 
   // Find the sender and receiver users and their accounts
@@ -32,7 +31,16 @@ router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
           .json({ error: "One or both users do not have an account." });
       }
 
-      if (sender.account.balance < amount) {
+      const senderBalance = parseFloat(sender.account.balance);
+      const receiverBalance = parseFloat(receiver.account.balance);
+
+      if (isNaN(senderBalance) || isNaN(receiverBalance)) {
+        return res
+          .status(500)
+          .json({ error: "Invalid account balance. Please contact support." });
+      }
+
+      if (senderBalance < amount) {
         return res
           .status(400)
           .json({ error: "Insufficient balance for the transaction." });
@@ -47,8 +55,8 @@ router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
       });
 
       // Update account balances
-      sender.account.balance -= amount;
-      receiver.account.balance += amount;
+      sender.account.balance = senderBalance - amount;
+      receiver.account.balance = receiverBalance + amount;
 
       // Update account transactions for sender and receiver
       sender.account.transactions.push(transaction._id);
@@ -58,15 +66,14 @@ router.post("/users/:senderId/transactions/:receiverId", (req, res) => {
         transaction.save(),
         sender.account.save(),
         receiver.account.save(),
-      ]);
-    })
-    .then(([transaction, senderAccount, receiverAccount]) => {
-      return res.json({
-        message: "Transaction successful.",
-        transaction: transaction,
-        transferMessage: transferMessage,
-        senderNewBalance: senderAccount.balance,
-        receiverNewBalance: receiverAccount.balance,
+      ]).then(([transaction, senderAccount, receiverAccount]) => {
+        return res.json({
+          message: "Transaction successful.",
+          transaction: transaction,
+          transferMessage: transferMessage,
+          senderNewBalance: senderAccount.balance,
+          receiverNewBalance: receiverAccount.balance,
+        });
       });
     })
     .catch((err) => {

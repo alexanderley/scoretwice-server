@@ -5,6 +5,23 @@ const bcrypt = require("bcryptjs");
 
 const router = express.Router();
 
+
+
+// GET and find all the users
+// access public
+// route  api/users
+router.get("/users", async (req, res) => {
+  try {
+    const users = await User.find({}, "firstName lastName _id");
+    res.json(users);
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+
+
 // GET and find user by id
 // access private
 // route  api/users/:id
@@ -30,7 +47,7 @@ router.get("/users/:id", (req, res, next) => {
     .catch((error) => res.json(error));
 });
 
-// GET and find user by id and update
+// PUT and find user by id and update
 // access private
 // route  api/users/:id
 
