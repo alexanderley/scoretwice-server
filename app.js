@@ -17,14 +17,21 @@ app.use("/api", isAuthenticated, projectRouter);
 const taskRouter = require("./routes/task.routes");
 app.use("/api", isAuthenticated, taskRouter);
 
+//TRANSACTIONS
+const transactionRouter = require("./routes/transactions.routes");
+app.use("/api", isAuthenticated, transactionRouter);
+//USER
 const userRouter = require("./routes/user.routes");
 app.use("/api", isAuthenticated, userRouter);
+
 
 const creditScoreRouter = require("./routes/creditScore.routes");
 app.use("/api", isAuthenticated, creditScoreRouter);
 
+//AUTHENTIFICATION
+
 const authRouter = require("./routes/auth.routes");
-app.use("/auth", authRouter); //  <== ADD
+app.use("/auth", authRouter);
 
 require("./error-handling")(app);
 

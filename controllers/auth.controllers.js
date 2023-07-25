@@ -47,7 +47,7 @@ const registerUser = async (req, res) => {
     // If the email is unique, proceed to hash the password
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashedPassword = bcrypt.hashSync(password, salt);
-    console.log("cona", hashedPassword);
+    console.log("hashedPassword", hashedPassword);
 
     const createdUser = await User.create({
       email,
@@ -55,7 +55,7 @@ const registerUser = async (req, res) => {
       firstName,
       lastName,
       gender,
-      birthday,
+      birthday
     });
 
     console.log(createdUser);
@@ -79,4 +79,66 @@ const registerUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser };
+// @description   Login User
+// route          POST/ "/"
+// @access        Public
+
+// POST  /auth/login - Verifies email and password and returns a JWT
+const loginUser = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // Check if email or password are provided as empty string
+  if (email === "" || password === "") {
+    res.status(400).json({ message: "Provide email and password." });
+    return;
+  }
+
+  // Check the users collection if a user with the same email exists
+  User.findOne({ email })
+    .then((foundUser) => {
+      if (!foundUser) {
+        // If the user is not found, send an error response
+        res.status(401).json({ message: "User not found." });
+        return;
+      }
+
+      // Compare the provided password with the one saved in the database
+      const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
+
+      if (passwordCorrect) {
+        // Deconstruct the user object to omit the password
+        const { _id, email, firstName, lastName, gender, birthday, account } = foundUser;
+
+        // Create an object that will be set as the token payload
+        const payload = {
+          _id,
+          email,
+          firstName,
+          lastName,
+          gender,
+          birthday,
+          account
+        };
+
+        // Create and sign the token
+        const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
+          algorithm: "HS256",
+          expiresIn: "6h",
+        });
+
+        // Include the user data and token in the response
+        const responseObj = {
+          authToken: authToken,
+          foundUser: foundUser,
+        };
+
+        // Send the token a nd user data as the response
+        res.status(200).json(responseObj);
+      } else {
+        res.status(401).json({ message: "Unable to authenticate the user" });
+      }
+    })
+    .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
+};
+
+module.exports = { registerUser, loginUser };
