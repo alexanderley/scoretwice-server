@@ -1,10 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { protect } = require("../middleware/authMiddleware");
 const {
   createCreditScore,
   updateCreditScoreInputs,
 } = require("../controllers/credit-score.controllers");
+const { getCreditScore } = require("../middleware/creditScore");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
+
+router.post("/credit-score", isAuthenticated, createCreditScore);
+router.get("/credit-score/:userId");
 
 // Post data from credit score form
 // router.post("/credit-score", protect, createCreditScore);

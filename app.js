@@ -23,7 +23,13 @@ app.use("/api", isAuthenticated, transactionRouter);
 //USER
 const userRouter = require("./routes/user.routes");
 app.use("/api", isAuthenticated, userRouter);
+
+
+const creditScoreRouter = require("./routes/creditScore.routes");
+app.use("/api", isAuthenticated, creditScoreRouter);
+
 //AUTHENTIFICATION
+
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
 
