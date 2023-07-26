@@ -26,7 +26,7 @@ const creditScoreSchema = new mongoose.Schema({
       "Single/ not married",
       "Separated",
       "Widow",
-      "Civil marriage",
+      "Civil Marriage",
     ],
     required: true,
   },
