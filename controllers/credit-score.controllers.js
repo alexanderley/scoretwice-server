@@ -53,6 +53,8 @@ const createCreditScore = asyncHandler(async (req, res) => {
   }
 });
 
+// getCreditScore
+
 // Edit credit score inputs
 const updateCreditScoreInputs = asyncHandler(async (req, res) => {
   console.log(req.user);
