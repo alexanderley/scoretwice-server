@@ -89,19 +89,8 @@ const getCreditScore = AsyncHandler(async (req, res, next) => {
       "Civil marriage": 4,
     };
 
-    const housingTypeMap = {
-      "House/apartment": 5,
-      "With parents": 1,
-      "Municipal apartment": 2,
-      "Office apartment": 6,
-      "Co-op apartment": 4,
-      "Rented apartment": 3,
-    };
-
     creditScore.educationLevel = educationLevelMap[creditScore.educationLevel];
     creditScore.maritalStatus = maritalStatusMap[creditScore.maritalStatus];
-    creditScore.housingType = housingTypeMap[creditScore.housingType];
-    creditScore.incomeType = incomeTypeMap[creditScore.incomeType];
 
     const employmentStartDate = creditScore.daysFromEmployment;
     const currentDate = new Date();
