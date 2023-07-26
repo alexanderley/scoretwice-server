@@ -65,6 +65,7 @@ function calculateCreditScore(creditScore) {
 }
 
 const getCreditScore = AsyncHandler(async (req, res, next) => {
+  const {id} = req.params;
   const userId = req.payload._id;
 
   const creditScore = await CreditScore.findOne({ user: userId });

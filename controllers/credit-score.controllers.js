@@ -17,6 +17,7 @@ const createCreditScore = asyncHandler(async (req, res) => {
   } = req.body; // Add the rest
 
   const user = req.payload; //double check this
+  const { id } = req.params;
   console.log(req.payload);
 
   if (!user) {
