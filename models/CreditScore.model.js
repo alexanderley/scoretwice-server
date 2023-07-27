@@ -26,7 +26,7 @@ const creditScoreSchema = new mongoose.Schema({
       "Single/ not married",
       "Separated",
       "Widow",
-      "Civil marriage",
+      "Civil Marriage",
     ],
     required: true,
   },
@@ -36,7 +36,7 @@ const creditScoreSchema = new mongoose.Schema({
   creditStatus: { type: Boolean, required: true },
 
   // New field for the credit score grade (to be updated later)
-  creditScoreGrade: { type: String, required: false },
+  creditScoreGrade: { type: Number, required: false },
 });
 
 // Create the CreditScore model

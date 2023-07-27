@@ -7,8 +7,8 @@ const {
 const { getCreditScore } = require("../middleware/creditScore");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-router.post("/credit-score", isAuthenticated, createCreditScore);
-router.get("/credit-score/:userId");
+router.post("/credit-score/:id/create", isAuthenticated, createCreditScore);
+router.get("/credit-score/:id", isAuthenticated, getCreditScore);
 
 // Post data from credit score form
 // router.post("/credit-score", protect, createCreditScore);

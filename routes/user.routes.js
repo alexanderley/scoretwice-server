@@ -61,12 +61,13 @@ router.put("/users/:id", (req, res, next) => {
     return;
   }
 
-  const { email, password /* and other fields */ } = req.body;
+  const { email, password, firstName } = req.body;
   console.log("reqBody: ", req.body);
 
   const updates = {};
 
   if (email) updates.email = email;
+  if (firstName) updates.firstName = firstName;
   if (password) updates.password = bcrypt.hashSync(password, 10);
   console.log("updates:", updates);
 
@@ -92,8 +93,32 @@ router.put("/users/:id", (req, res, next) => {
     );
 });
 
+<<<<<<< HEAD
 
 
+=======
+// delete the user
+router.delete("/users/:id", (req, res, next) => {
+  const { id } = req.params;
+  console.log("id", id);
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400).json({ message: "Specified id is not valid" });
+    return;
+  }
+  User.findByIdAndRemove(id)
+    .then((deletedUser) => {
+      if (!deletedUser) {
+        res.status(404).json({ message: "User not found" });
+      } else {
+        res.status(200).json({ message: "User deleted successfully" });
+      }
+    })
+    .catch((error) =>
+      res.status(500).json({ message: "Error deleting user", error })
+    );
+});
+>>>>>>> 355177e116f0512d39b9f63794f1f6910159c35a
 
 // POST request to increase the account balance for a user
 router.post("/users/:id/account", (req, res) => {
