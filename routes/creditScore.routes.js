@@ -19,4 +19,5 @@ router.delete("/credit-score/:id", isAuthenticated, deleteCreditScore);
 
 module.exports = router;
 
+// id for the creditscore
 // 64c25b16ebd32409501c3b94
