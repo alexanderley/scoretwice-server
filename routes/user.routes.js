@@ -5,8 +5,6 @@ const bcrypt = require("bcryptjs");
 
 const router = express.Router();
 
-
-
 // GET and find all the users
 // access public
 // route  api/users
@@ -19,8 +17,6 @@ router.get("/users", async (req, res) => {
     res.status(500).json({ error: "Internal server error." });
   }
 });
-
-
 
 // GET and find user by id
 // access private
@@ -93,10 +89,6 @@ router.put("/users/:id", (req, res, next) => {
     );
 });
 
-<<<<<<< HEAD
-
-
-=======
 // delete the user
 router.delete("/users/:id", (req, res, next) => {
   const { id } = req.params;
@@ -118,7 +110,6 @@ router.delete("/users/:id", (req, res, next) => {
       res.status(500).json({ message: "Error deleting user", error })
     );
 });
->>>>>>> 355177e116f0512d39b9f63794f1f6910159c35a
 
 // POST request to increase the account balance for a user
 router.post("/users/:id/account", (req, res) => {
@@ -154,8 +145,6 @@ router.post("/users/:id/account", (req, res) => {
       return res.status(500).json({ error: "Internal server error." });
     });
 });
-
-
 
 // POST HARDRESET
 router.post("/users/:id/resetaccountbalance", (req, res) => {
