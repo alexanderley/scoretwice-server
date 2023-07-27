@@ -54,7 +54,30 @@ const createCreditScore = asyncHandler(async (req, res) => {
   }
 });
 
-// getCreditScore
+// deleteCredit Score
+const deleteCreditScore = asyncHandler(async (req, res) => {
+  console.log("req params", req.params);
+  console.log("delete CreditScore", req.user);
+
+  const { id } = req.params;
+  const userId = id;
+
+  try {
+    const deletedCreditScore = await CreditScore.findOneAndRemove({
+      user: userId,
+    });
+    if (!deletedCreditScore) {
+      return res
+        .status(404)
+        .json({ message: "Credit score not found for the user." });
+    }
+
+    res.json({ message: "Credit score deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting credit score:", error);
+    res.status(500).json({ message: "Error deleting credit score." });
+  }
+});
 
 // Edit credit score inputs
 const updateCreditScoreInputs = asyncHandler(async (req, res) => {
@@ -92,4 +115,8 @@ const updateCreditScoreInputs = asyncHandler(async (req, res) => {
 
 // get credit score
 
-module.exports = { createCreditScore, updateCreditScoreInputs };
+module.exports = {
+  createCreditScore,
+  updateCreditScoreInputs,
+  deleteCreditScore,
+};
